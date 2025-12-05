@@ -1,6 +1,7 @@
 package record
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/epalmerini/abitudini/internal/habit"
@@ -27,10 +28,16 @@ func NewService(store StoreAdapter, habitService HabitAdapter) *Service {
 }
 
 func (s *Service) MarkDoneToday(habitID int) error {
+	if s == nil || s.store == nil {
+		return fmt.Errorf("service not properly initialized")
+	}
 	return s.store.Record(habitID, time.Now())
 }
 
 func (s *Service) GetRecords(habitID int, from, to time.Time) ([]Record, error) {
+	if s == nil || s.store == nil {
+		return nil, fmt.Errorf("service not properly initialized")
+	}
 	return s.store.GetByHabitAndDateRange(habitID, from, to)
 }
 
@@ -59,9 +66,16 @@ func (s *Service) GetContributionData(habitID int, from, to time.Time) ([]Contri
 }
 
 func (s *Service) GetHabit(habitID int) (*habit.Habit, error) {
+	if s == nil || s.habitService == nil {
+		return nil, fmt.Errorf("service not properly initialized")
+	}
+	
 	h, err := s.habitService.GetByID(habitID)
 	if err != nil {
 		return nil, err
+	}
+	if h == nil {
+		return nil, fmt.Errorf("habit not found")
 	}
 	
 	// Set CompletedToday flag
@@ -75,6 +89,10 @@ func (s *Service) GetHabit(habitID int) (*habit.Habit, error) {
 }
 
 func (s *Service) IsCompletedToday(habitID int) (bool, error) {
+	if s == nil || s.store == nil {
+		return false, fmt.Errorf("service not properly initialized")
+	}
+	
 	today := time.Now()
 	startOfDay := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, today.Location())
 	endOfDay := startOfDay.AddDate(0, 0, 1).Add(-time.Nanosecond)
