@@ -159,7 +159,8 @@ func TestGetContributionData_Error(t *testing.T) {
 func TestGetHabit_Success(t *testing.T) {
 	expectedHabit := &habit.Habit{ID: 1, Description: "Test"}
 	adapter := &mockHabitAdapter{habit: expectedHabit}
-	s := NewService(nil, adapter)
+	store := &mockRecordStore{records: []Record{}}
+	s := NewService(store, adapter)
 
 	h, err := s.GetHabit(1)
 	if err != nil {

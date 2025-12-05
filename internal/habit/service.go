@@ -1,8 +1,8 @@
 package habit
 
 type StoreAdapter interface {
-	Create(h *Habit, schedule *Schedule) (int, error)
-	Update(h *Habit, schedule *Schedule) error
+	Create(h *Habit) (int, error)
+	Update(h *Habit) error
 	GetByID(habitID int) (*Habit, error)
 	GetAll() ([]Habit, error)
 	Delete(habitID int) error
@@ -25,12 +25,12 @@ func NewService(store StoreAdapter, recordService ...RecordServiceAdapter) *Serv
 	return s
 }
 
-func (s *Service) Create(h *Habit, schedule *Schedule) (int, error) {
-	return s.store.Create(h, schedule)
+func (s *Service) Create(h *Habit) (int, error) {
+	return s.store.Create(h)
 }
 
-func (s *Service) Update(h *Habit, schedule *Schedule) error {
-	return s.store.Update(h, schedule)
+func (s *Service) Update(h *Habit) error {
+	return s.store.Update(h)
 }
 
 func (s *Service) GetByID(habitID int) (*Habit, error) {

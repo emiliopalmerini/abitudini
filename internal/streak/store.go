@@ -47,13 +47,12 @@ func (s *Store) GetHabitByID(habitID int) (*habit.Habit, error) {
 	h := &habit.Habit{}
 	var startDate string
 	var createdAt string
-	var frequencyStr string
 
 	err := s.db.QueryRow(
-		`SELECT id, description, frequency, start_date, color, created_at 
+		`SELECT id, description, start_date, color, created_at 
 		 FROM habits WHERE id = ?`,
 		habitID,
-	).Scan(&h.ID, &h.Description, &frequencyStr, &startDate, &h.Color, &createdAt)
+	).Scan(&h.ID, &h.Description, &startDate, &h.Color, &createdAt)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -62,7 +61,6 @@ func (s *Store) GetHabitByID(habitID int) (*habit.Habit, error) {
 		return nil, fmt.Errorf("failed to get habit: %w", err)
 	}
 
-	h.Frequency = habit.Frequency(frequencyStr)
 	h.StartDate, _ = time.Parse("2006-01-02", startDate)
 	h.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
 	return h, nil

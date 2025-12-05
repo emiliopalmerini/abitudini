@@ -12,14 +12,14 @@ type mockHabitStore struct {
 	err    error
 }
 
-func (m *mockHabitStore) Create(h *Habit, schedule *Schedule) (int, error) {
+func (m *mockHabitStore) Create(h *Habit) (int, error) {
 	if m.err != nil {
 		return 0, m.err
 	}
 	return m.id, nil
 }
 
-func (m *mockHabitStore) Update(h *Habit, schedule *Schedule) error {
+func (m *mockHabitStore) Update(h *Habit) error {
 	return m.err
 }
 
@@ -58,9 +58,8 @@ func TestHabitCreate_Success(t *testing.T) {
 	s := NewService(store)
 
 	habit := &Habit{Description: "Test"}
-	schedule := &Schedule{}
 	
-	id, err := s.Create(habit, schedule)
+	id, err := s.Create(habit)
 	if err != nil {
 		t.Errorf("expected no error, got %v", err)
 	}
@@ -73,7 +72,7 @@ func TestHabitCreate_Error(t *testing.T) {
 	store := &mockHabitStore{err: errors.New("create failed")}
 	s := NewService(store)
 
-	_, err := s.Create(&Habit{}, &Schedule{})
+	_, err := s.Create(&Habit{})
 	if err == nil {
 		t.Error("expected error when create fails")
 	}
@@ -84,9 +83,8 @@ func TestHabitUpdate_Success(t *testing.T) {
 	s := NewService(store)
 
 	habit := &Habit{ID: 1}
-	schedule := &Schedule{}
 	
-	err := s.Update(habit, schedule)
+	err := s.Update(habit)
 	if err != nil {
 		t.Errorf("expected no error, got %v", err)
 	}
@@ -96,7 +94,7 @@ func TestHabitUpdate_Error(t *testing.T) {
 	store := &mockHabitStore{err: errors.New("update failed")}
 	s := NewService(store)
 
-	err := s.Update(&Habit{}, &Schedule{})
+	err := s.Update(&Habit{})
 	if err == nil {
 		t.Error("expected error when update fails")
 	}

@@ -15,14 +15,14 @@ type mockHandlerService struct {
 	err      error
 }
 
-func (m *mockHandlerService) Create(h *Habit, schedule *Schedule) (int, error) {
+func (m *mockHandlerService) Create(h *Habit) (int, error) {
 	if m.err != nil {
 		return 0, m.err
 	}
 	return m.createID, nil
 }
 
-func (m *mockHandlerService) Update(h *Habit, schedule *Schedule) error {
+func (m *mockHandlerService) Update(h *Habit) error {
 	return m.err
 }
 
@@ -45,11 +45,11 @@ func (m *mockHandlerService) Delete(habitID int) error {
 }
 
 func TestCreate_Success(t *testing.T) {
-	habit := &Habit{ID: 1, Description: "Test", Frequency: "daily", Color: "blue"}
+	habit := &Habit{ID: 1, Description: "Test", Color: "blue"}
 	service := &mockHandlerService{createID: 1, habit: habit}
 	handler := NewHandler(service)
 
-	req := httptest.NewRequest("POST", "/api/habits", strings.NewReader("description=Test&frequency=daily&start_date=2025-01-01&color=blue"))
+	req := httptest.NewRequest("POST", "/api/habits", strings.NewReader("description=Test&start_date=2025-01-01&color=blue"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	w := httptest.NewRecorder()
 
@@ -81,7 +81,7 @@ func TestCreate_ServiceError(t *testing.T) {
 	service := &mockHandlerService{err: errors.New("service failed")}
 	handler := NewHandler(service)
 
-	req := httptest.NewRequest("POST", "/api/habits", strings.NewReader("description=Test&frequency=daily&start_date=2025-01-01&color=blue"))
+	req := httptest.NewRequest("POST", "/api/habits", strings.NewReader("description=Test&start_date=2025-01-01&color=blue"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	w := httptest.NewRecorder()
 
@@ -214,7 +214,7 @@ func TestUpdate_Success(t *testing.T) {
 	service := &mockHandlerService{habit: habit}
 	handler := NewHandler(service)
 
-	req := httptest.NewRequest("PUT", "/api/habits/1", strings.NewReader("description=Updated&frequency=daily&start_date=2025-01-01&color=blue"))
+	req := httptest.NewRequest("PUT", "/api/habits/1", strings.NewReader("description=Updated&start_date=2025-01-01&color=blue"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.SetPathValue("id", "1")
 	w := httptest.NewRecorder()
@@ -257,7 +257,7 @@ func TestUpdate_ServiceError(t *testing.T) {
 	service := &mockHandlerService{err: errors.New("service failed")}
 	handler := NewHandler(service)
 
-	req := httptest.NewRequest("PUT", "/api/habits/1", strings.NewReader("description=Test&frequency=daily&start_date=2025-01-01&color=blue"))
+	req := httptest.NewRequest("PUT", "/api/habits/1", strings.NewReader("description=Test&start_date=2025-01-01&color=blue"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.SetPathValue("id", "1")
 	w := httptest.NewRecorder()

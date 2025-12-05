@@ -13,12 +13,11 @@ func TestStore_CreateAndGetByID(t *testing.T) {
 
 	habit := &Habit{
 		Description: "Test Habit",
-		Frequency:   FrequencyDaily,
 		StartDate:   time.Now(),
 		Color:       "blue",
 	}
 
-	id, err := store.Create(habit, nil)
+	id, err := store.Create(habit)
 	if err != nil {
 		t.Fatalf("failed to create habit: %v", err)
 	}
@@ -46,10 +45,9 @@ func TestStore_GetAll(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		_, err := store.Create(&Habit{
 			Description: "Habit " + string(rune(i)),
-			Frequency:   FrequencyDaily,
 			StartDate:   time.Now(),
 			Color:       "blue",
-		}, nil)
+		})
 		if err != nil {
 			t.Fatalf("failed to create habit: %v", err)
 		}
@@ -70,12 +68,11 @@ func TestStore_Update(t *testing.T) {
 
 	habit := &Habit{
 		Description: "Original",
-		Frequency:   FrequencyDaily,
 		StartDate:   time.Now(),
 		Color:       "blue",
 	}
 
-	id, err := store.Create(habit, nil)
+	id, err := store.Create(habit)
 	if err != nil {
 		t.Fatalf("failed to create habit: %v", err)
 	}
@@ -83,7 +80,7 @@ func TestStore_Update(t *testing.T) {
 	habit.ID = id
 	habit.Description = "Updated"
 
-	err = store.Update(habit, nil)
+	err = store.Update(habit)
 	if err != nil {
 		t.Fatalf("failed to update habit: %v", err)
 	}
@@ -103,12 +100,11 @@ func TestStore_Delete(t *testing.T) {
 
 	habit := &Habit{
 		Description: "Test",
-		Frequency:   FrequencyDaily,
 		StartDate:   time.Now(),
 		Color:       "blue",
 	}
 
-	id, err := store.Create(habit, nil)
+	id, err := store.Create(habit)
 	if err != nil {
 		t.Fatalf("failed to create habit: %v", err)
 	}
@@ -134,96 +130,12 @@ func TestStore_GetByID_NotFound(t *testing.T) {
 	}
 }
 
-func TestStore_IsValidForDate_Daily(t *testing.T) {
+func TestStore_IsValidForDate(t *testing.T) {
 	store := NewStore(nil)
-	habit := &Habit{Frequency: FrequencyDaily}
+	habit := &Habit{}
 
-	// Daily habits should be valid every day
+	// All habits are valid for all dates now
 	if !store.IsValidForDate(habit, time.Now()) {
-		t.Error("daily habit should be valid")
-	}
-}
-
-func TestStore_IsValidForDate_Weekly(t *testing.T) {
-	store := NewStore(nil)
-	habit := &Habit{
-		Frequency: FrequencyWeekly,
-		Schedule: Schedule{
-			DaysOfWeek: []int{int(time.Monday)},
-		},
-	}
-
-	// Find a Monday
-	monday := time.Now()
-	for monday.Weekday() != time.Monday {
-		monday = monday.AddDate(0, 0, 1)
-	}
-
-	if !store.IsValidForDate(habit, monday) {
-		t.Error("habit should be valid on Monday")
-	}
-
-	// Check non-matching day
-	tuesday := monday.AddDate(0, 0, 1)
-	if store.IsValidForDate(habit, tuesday) {
-		t.Error("habit should not be valid on Tuesday")
-	}
-}
-
-func TestStore_IsValidForDate_Weekly_NoSchedule(t *testing.T) {
-	store := NewStore(nil)
-	habit := &Habit{
-		Frequency: FrequencyWeekly,
-		Schedule:  Schedule{DaysOfWeek: []int{}},
-	}
-
-	// No schedule means valid every day
-	if !store.IsValidForDate(habit, time.Now()) {
-		t.Error("weekly habit with no schedule should be valid")
-	}
-}
-
-func TestStore_IsValidForDate_Monthly(t *testing.T) {
-	store := NewStore(nil)
-	habit := &Habit{
-		Frequency: FrequencyMonthly,
-		Schedule: Schedule{
-			DaysOfMonth: []int{15},
-		},
-	}
-
-	// Day 15
-	day15 := time.Date(2025, 12, 15, 0, 0, 0, 0, time.UTC)
-	if !store.IsValidForDate(habit, day15) {
-		t.Error("habit should be valid on day 15")
-	}
-
-	// Day 14
-	day14 := time.Date(2025, 12, 14, 0, 0, 0, 0, time.UTC)
-	if store.IsValidForDate(habit, day14) {
-		t.Error("habit should not be valid on day 14")
-	}
-}
-
-func TestStore_IsValidForDate_Monthly_NoSchedule(t *testing.T) {
-	store := NewStore(nil)
-	habit := &Habit{
-		Frequency: FrequencyMonthly,
-		Schedule:  Schedule{DaysOfMonth: []int{}},
-	}
-
-	// No schedule means valid every day
-	if !store.IsValidForDate(habit, time.Now()) {
-		t.Error("monthly habit with no schedule should be valid")
-	}
-}
-
-func TestStore_IsValidForDate_Unknown(t *testing.T) {
-	store := NewStore(nil)
-	habit := &Habit{Frequency: "unknown"}
-
-	// Unknown frequency should be invalid
-	if store.IsValidForDate(habit, time.Now()) {
-		t.Error("unknown frequency should be invalid")
+		t.Error("habit should always be valid")
 	}
 }

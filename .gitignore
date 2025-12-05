@@ -13,7 +13,6 @@ abitudini
 
 # Dependency directories
 vendor/
-go.sum
 
 # Database
 *.db

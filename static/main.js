@@ -16,9 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Handle HTMX events for smooth interactions
 document.addEventListener('htmx:afterSwap', function(event) {
-	// Re-process Alpine.js directives if needed
+	// Re-initialize Alpine.js components if any were added
 	if (window.Alpine) {
-		Alpine.scan(event.detail.target);
+		Alpine.destroyTree(event.detail.target);
+		Alpine.initTree(event.detail.target);
 	}
 });
 

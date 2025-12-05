@@ -41,17 +41,15 @@ func (h *Handler) MarkDoneToday(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get updated habit and return it with success message
+	// Get updated habit and return it
 	habitData, err := h.service.GetHabit(habitID)
 	if err != nil {
 		h.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	html := fmt.Sprintf(`<div class="success">✓ Done recorded</div>
-%s`, habit.RenderHabit(habitData))
-
-	h.WriteHTML(w, html)
+	response := `<div class="success">Marked as done today</div>` + habit.RenderHabit(habitData)
+	h.WriteHTML(w, response)
 }
 
 func (h *Handler) GetContribution(w http.ResponseWriter, r *http.Request) {

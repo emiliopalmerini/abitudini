@@ -4,9 +4,9 @@ A minimalist habit tracking application built with Go, HTMX, and Alpine.js using
 
 ## Features
 
-- **Track daily, weekly, and monthly habits** with GitHub-style contribution graphs
-- **Inline editing** - click habit title to edit description, frequency, and color
-- **Streak tracking** - automatic calculation of current streaks based on frequency
+- **Track daily habits** with GitHub-style contribution graphs
+- **Inline editing** - click habit title to edit description and color
+- **Streak tracking** - automatic calculation of current streaks
 - **Read-only contribution graph** - visual representation of habit completion
 - **Single-user** - personal use optimized
 
@@ -78,15 +78,9 @@ Server starts on `http://localhost:8080`
 ### Habit
 - `id`: Integer (PK)
 - `description`: String
-- `frequency`: daily | weekly | monthly
 - `start_date`: Date
 - `color`: Hex color
 - `created_at`: Timestamp
-
-### Habit Schedule (for weekly/monthly)
-- `habit_id`: FK to habits
-- `day_of_week`: 0-6 (Sunday=0)
-- `day_of_month`: 1-31
 
 ### Record
 - `habit_id`: FK to habits
@@ -95,17 +89,10 @@ Server starts on `http://localhost:8080`
 
 ## Features Detail
 
-### Frequency
-- **Daily**: Applies every day
-- **Weekly**: Select specific days (0-6, Sunday=0)
-- **Monthly**: Select specific days of month (1-31)
-
 ### Streak Logic
-- Broken after one missed occurrence (day/week/month)
+- Broken after one missed day
 - Calculates backward from today
-- Daily: consecutive days
-- Weekly: consecutive weeks with at least one completion
-- Monthly: consecutive months with at least one completion
+- Consecutive days with completion
 
 ### Contribution Graph
 - Displays completed vs. incomplete days
@@ -120,7 +107,6 @@ Migrations run automatically on startup. No manual setup needed.
 
 Schema includes:
 - `habits` table
-- `habit_schedule` table (for weekly/monthly days)
 - `records` table (completion history)
 - Indexes on frequently queried columns
 

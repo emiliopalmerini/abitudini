@@ -59,7 +59,19 @@ func (s *Service) GetContributionData(habitID int, from, to time.Time) ([]Contri
 }
 
 func (s *Service) GetHabit(habitID int) (*habit.Habit, error) {
-	return s.habitService.GetByID(habitID)
+	h, err := s.habitService.GetByID(habitID)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Set CompletedToday flag
+	completed, err := s.IsCompletedToday(habitID)
+	if err != nil {
+		return nil, err
+	}
+	h.CompletedToday = completed
+	
+	return h, nil
 }
 
 func (s *Service) IsCompletedToday(habitID int) (bool, error) {

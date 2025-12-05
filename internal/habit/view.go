@@ -120,7 +120,7 @@ const layoutHTML = `
     <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
     <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.10"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
     <header>
@@ -153,13 +153,7 @@ const createFormHTML = `
 <div class="create-form" style="display: none;">
     <form hx-post="/api/habits" hx-target="#habits-list" hx-swap="afterbegin" hx-on::after-request="this.reset()">
         <input type="text" name="description" placeholder="What habit?" required>
-        <select name="frequency" required>
-            <option value="">Frequency</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-        </select>
-        <input type="date" name="start_date" required>
+        <input type="date" name="start_date" value="{{dateNow}}" required>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 </div>
@@ -168,7 +162,7 @@ const createFormHTML = `
 
 const habitCardHTML = `
 {{define "habit-card"}}
-<div id="habit-{{.ID}}" class="card">
+<div id="habit-{{.ID}}" class="card" hx-on::htmx:afterRequest="this.classList.add('pulse')">
     <button class="card-delete-btn"
             hx-delete="/api/habits/{{.ID}}" 
             hx-confirm="Delete this habit and all its data?" 
@@ -181,20 +175,13 @@ const habitCardHTML = `
     <div class="card-header">
         <div>
             <h2>{{.Description}}</h2>
-            <p class="card-meta">{{.Frequency | title}} • Started on {{.StartDate | formatDate}}</p>
-            
-            {{if .Schedule.DaysOfWeek}}
-            <p class='schedule caption'>Days: {{.Schedule.DaysOfWeek | formatWeekdays}}</p>
-            {{end}}
-            
-            {{if .Schedule.DaysOfMonth}}
-             <p class='schedule caption'>Dates: {{.Schedule.DaysOfMonth}}</p>
-            {{end}}
+            <p class="card-meta">Started on {{.StartDate | formatDate}}</p>
         </div>
     </div>
 
     <div id="contribution-{{.ID}}" 
          class="contribution-container"
+         hx-get="/api/habits/{{.ID}}/contribution"
          hx-trigger="load"
          data-habit-id="{{.ID}}">
         <div class="contribution-grid" style="opacity: 0.5;">

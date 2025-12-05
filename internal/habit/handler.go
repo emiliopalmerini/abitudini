@@ -9,8 +9,8 @@ import (
 
 // HandlerService interface for dependency injection
 type HandlerService interface {
-	Create(h *Habit, schedule *Schedule) (int, error)
-	Update(h *Habit, schedule *Schedule) error
+	Create(h *Habit) (int, error)
+	Update(h *Habit) error
 	GetByID(habitID int) (*Habit, error)
 	GetAll() ([]Habit, error)
 	Delete(habitID int) error
@@ -37,7 +37,6 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	description := r.FormValue("description")
-	frequency := r.FormValue("frequency")
 	startDateStr := r.FormValue("start_date")
 	color := r.FormValue("color")
 
@@ -46,17 +45,11 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// Convert to domain types
 	domainHabit := &Habit{
 		Description: description,
-		Frequency:   Frequency(frequency),
 		StartDate:   startDate,
 		Color:       color,
 	}
 
-	domainSchedule := &Schedule{
-		DaysOfWeek:  []int{},
-		DaysOfMonth: []int{},
-	}
-
-	habitID, err := h.service.Create(domainHabit, domainSchedule)
+	habitID, err := h.service.Create(domainHabit)
 	if err != nil {
 		h.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -133,7 +126,6 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	description := r.FormValue("description")
-	frequency := r.FormValue("frequency")
 	startDateStr := r.FormValue("start_date")
 	color := r.FormValue("color")
 
@@ -143,17 +135,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	domainHabit := &Habit{
 		ID:          habitID,
 		Description: description,
-		Frequency:   Frequency(frequency),
 		StartDate:   startDate,
 		Color:       color,
 	}
 
-	domainSchedule := &Schedule{
-		DaysOfWeek:  []int{},
-		DaysOfMonth: []int{},
-	}
-
-	if err := h.service.Update(domainHabit, domainSchedule); err != nil {
+	if err := h.service.Update(domainHabit); err != nil {
 		h.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
