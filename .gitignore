@@ -1,0 +1,36 @@
+# Binaries
+abitudini
+*.exe
+*.exe~
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Test binaries
+*.test
+*.out
+
+# Dependency directories
+vendor/
+go.sum
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
