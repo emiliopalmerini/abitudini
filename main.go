@@ -2,10 +2,12 @@ package main
 
 import (
 	"embed"
+	"flag"
 	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/epalmerini/abitudini/internal/db"
 	"github.com/epalmerini/abitudini/internal/habit"
@@ -79,7 +81,20 @@ func main() {
 	})
 
 	// Server
-	port := ":8080"
+	portFlag := flag.String("p", "", "Port to listen on (default: 8080, or ABITUDINI_PORT env var)")
+	flag.Parse()
+
+	port := *portFlag
+	if port == "" {
+		port = os.Getenv("ABITUDINI_PORT")
+	}
+	if port == "" {
+		port = "8080"
+	}
+	if port[0] != ':' {
+		port = ":" + port
+	}
+
 	fmt.Printf("Server running on http://localhost%s\n", port)
 	if err := http.ListenAndServe(port, mux); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("Server error: %v", err)
