@@ -197,6 +197,8 @@ const habitCardHTML = `
                 hx-swap="outerHTML">
             ✓ Done Today
         </button>
+        {{else}}
+        <div></div>
         {{end}}
 
         <div id="streak-{{.ID}}" hx-get="/api/habits/{{.ID}}/streak" hx-trigger="load"></div>
